@@ -30,7 +30,8 @@ const Header = () => {
           <img src='/images/series-icon.svg' />
           <span>SERIES</span>
         </a>
-      </NavMenu>  
+      </NavMenu> 
+      <UserImg src='https://avatars.githubusercontent.com/u/104525685?s=400&u=1e72f56e7e3fe60ef294a804266f1b2d2420f4ac&v=4' /> 
     </Nav>
   )
 }
@@ -50,11 +51,15 @@ const Logo = styled.img`
 
 const NavMenu = styled.div`
   display: flex;
+  flex: 1;
+  margin-left: 25px;
+  align-items: center;
 
   a {
     display: flex;
     align-items: center;
     padding: 0 12px;
+    cursor: pointer;
 
     img {
       height: 20px;
@@ -65,4 +70,11 @@ const NavMenu = styled.div`
       letter-spacing: 1.42px;
     }
   }
+`
+
+const UserImg = styled.img`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
 `
