@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Login from './Login';
 
 const Header = () => {
   return (
@@ -31,7 +32,7 @@ const Header = () => {
           <span>SERIES</span>
         </a>
       </NavMenu> 
-      <UserImg src='https://avatars.githubusercontent.com/u/104525685?s=400&u=1e72f56e7e3fe60ef294a804266f1b2d2420f4ac&v=4' /> 
+      <UserImg src='https://avatars.githubusercontent.com/u/104525685?s=400&u=1e72f56e7e3fe60ef294a804266f1b2d2420f4ac&v=4' />
     </Nav>
   )
 }
