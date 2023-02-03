@@ -1,38 +1,91 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { auth, provider } from '../firebase';
 import styled from 'styled-components';
-import Login from './Login';
+import { useNavigate } from 'react-router-dom'; 
+import { selectUserName, selectUserPhoto, setSignOut, setUserLogin } from '../features/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const history = useNavigate();
+  const userName = useSelector(selectUserName);
+  const userPhoto = useSelector(selectUserPhoto);
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if(user) {
+        dispatch(setUserLogin({
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL
+        }));
+        history("/");
+      }
+    })
+  }, [])
+
+  const signIn = () => {
+    auth.signInWithPopup(provider)
+    .then((result) => {
+      let user = result.user
+      dispatch(setUserLogin({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL
+      }));
+      history("/");
+    })
+  }
+
+  const signOut = () => {
+    auth.signOut()
+    .then(() => {
+      dispatch(setSignOut());
+      history("/Login");
+    })
+  }
+
   return (
     <Nav>
-      <Logo src="/images/logo.svg" /> 
-      <NavMenu>
-        <a>
-          <img src='/images/home-icon.svg' />
-          <span>HOME</span>
-        </a>
-        <a>
-          <img src='/images/search-icon.svg' />
-          <span>SEARCH</span>
-        </a>
-        <a>
-          <img src='/images/watchlist-icon.svg' />
-          <span>WATCHLIST</span>
-        </a>
-        <a>
-          <img src='/images/original-icon.svg' />
-          <span>ORIGINALS</span>
-        </a>
-        <a>
-          <img src='/images/movie-icon.svg' />
-          <span>MOVIES</span>
-        </a>
-        <a>
-          <img src='/images/series-icon.svg' />
-          <span>SERIES</span>
-        </a>
-      </NavMenu> 
-      <UserImg src='https://avatars.githubusercontent.com/u/104525685?s=400&u=1e72f56e7e3fe60ef294a804266f1b2d2420f4ac&v=4' />
+      <Logo src="/images/logo.svg" />
+        { !userName ? (
+          <LoginContainer>
+            <Login onClick={signIn}>Login</Login>
+          </LoginContainer>
+            ):
+            <>
+              <NavMenu>
+                <a>
+                  <img src='/images/home-icon.svg' />
+                  <span>HOME</span>
+                </a>
+                <a>
+                  <img src='/images/search-icon.svg' />
+                  <span>SEARCH</span>
+                </a>
+                <a>
+                  <img src='/images/watchlist-icon.svg' />
+                  <span>WATCHLIST</span>
+                </a>
+                <a>
+                  <img src='/images/original-icon.svg' />
+                  <span>ORIGINALS</span>
+                </a>
+                <a>
+                  <img src='/images/movie-icon.svg' />
+                  <span>MOVIES</span>
+                </a>
+                <a>
+                  <img src='/images/series-icon.svg' />
+                  <span>SERIES</span>
+                </a>
+              </NavMenu> 
+              <UserImg 
+                onClick={signOut}
+                src='https://avatars.githubusercontent.com/u/104525685?s=400&u=1e72f56e7e3fe60ef294a804266f1b2d2420f4ac&v=4' />
+            </>
+        } 
+      
     </Nav>
   )
 }
@@ -94,10 +147,30 @@ const NavMenu = styled.div`
     }
   }
 `
-
 const UserImg = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 50%;
   cursor: pointer;
+`
+const Login = styled.div`
+  border: 1px solid #f9f9f9;
+  padding: 8px 16px;
+  border-radius: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background-color: rgba(0, 0, 0, 0.6);
+  transition: all 0.2s ease 0s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f9f9f9;
+    color: #000;
+    border-color: transparent;
+  }
+`
+const LoginContainer = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 `
