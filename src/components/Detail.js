@@ -5,7 +5,7 @@ import db from '../firebase';
 
 const Detail = () => {
     const { id } = useParams();
-    const [movie, setMovie] = useState();
+    const [detailData, setDetailData] = useState({});
 
     useEffect(() => {
         // Grab the movie info from DB
@@ -15,48 +15,50 @@ const Detail = () => {
             .then((doc) => {
                 if (doc.exists) {
                     // save the movie data
-                    setMovie(doc.data());
+                    setDetailData(doc.data());
                 } else {
-                    // redirect to home page
+                    console.log("no such document in firebase");
                 }
+            }).catch((error) => {
+                console.log("Error getting documents:", error);
             })
-    }, [])
+    }, [id]);
 
     return (
         <Container>
-            {movie && (
-                <>
-                    <Background>
-                        <img src={movie.backgroundImg} />
-                    </Background>
-                    <ImageTitle>
-                        <img src={movie.titleImg} />
-                    </ImageTitle>
-                    <Controls>
-                        <PlayButton>
-                            <img src='/images/play-icon-black.png' />
-                            <span>PLAY</span>
-                        </PlayButton>
-                        <TrailerButton>
-                            <img src='/images/play-icon-white.png' />
-                            <span>TRAILER</span>
-                        </TrailerButton>
-                        <AddButton>
-                            <span>+</span>
-                        </AddButton>
-                        <GroupWatchButton>
+            <Background>
+                <img src={detailData.backgroundImg} alt={detailData.title} />
+            </Background>
+            <ImageTitle>
+                <img src={detailData.titleImg} alt={detailData.title} />
+            </ImageTitle>
+            <ContentMeta>
+                <Controls>
+                    <PlayButton>
+                        <img src='/images/play-icon-black.png' />
+                        <span>PLAY</span>
+                    </PlayButton>
+                    <TrailerButton>
+                        <img src='/images/play-icon-white.png' />
+                        <span>TRAILER</span>
+                    </TrailerButton>
+                    <AddButton>
+                        <span />
+                        <span />
+                    </AddButton>
+                    <GroupWatchButton>
+                        <div>
                             <img src='/images/group-icon.png' />
-                        </GroupWatchButton>
-                    </Controls>
-                    <SubTitle>
-                        {movie.subTitle}
-                    </SubTitle>
-                    <Description>
-                        {movie.description}
-                    </Description>
-                </>
-            )}
-
+                        </div>
+                    </GroupWatchButton>
+                </Controls>
+            </ContentMeta>
+            <SubTitle>
+                {detailData.subTitle}
+            </SubTitle>
+            <Description>
+                {detailData.description}
+            </Description>
         </Container>
     )
 }
@@ -64,57 +66,90 @@ const Detail = () => {
 export default Detail;
 
 const Container = styled.div`
-    min-height: calc(100vh - 70px);
-    padding: 0 calc(3.5vw + 5px);
     position: relative;
+    min-height: calc(100vh - 250px);
+    overflow-x: hidden;
+    display: block;
+    top: 72px;
+    padding: 0 calc(3.5vw + 5px);
 `
 const Background = styled.div`
-    position: fixed;
-    top: 0;
     left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: -1;
     opacity: 0.8;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: -1;
 
     img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        width: 100vw;
+        height: 100vh;
+        @media (max-width: 768px) {
+            width: initial;
+        }
     }
 `
 const ImageTitle = styled.div`
-    height: 30vh;
+    align-items: flex-end;
+    display: flex;
+    -webkit-box-pack: start;
+    justify-content: flex-start;
+    margin: 0px auto;
+    height: 30vw;
     min-height: 170px;
-    width: 35vw;
-    min-width: 200px;
-    margin-top: 60px;
+    padding-bottom: 24px;
+    width: 100%;
 
     img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+        max-width: 600px;
+        min-width: 200px;
+        width: 35vw;
     }
 `
+const ContentMeta = styled.div`
+    max-width: 874px;
+`
 const Controls = styled.div`
-    display: flex;
     align-items: center;
+    display: flex;
+    flex-flow: row nowrap;
+    margin: 24px 0px;
+    min-height: 56px;
 `
 const PlayButton = styled.button`
-    border-radius: 4px;
     font-size: 15px;
+    margin: 0px 22px 0px 0px;
     padding: 0px 24px;
-    margin-right: 22px;
+    height: 56px;
+    border-radius: 4px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    height: 56px;
+    justify-content: center;
+    letter-spacing: 1.8px;
+    text-align: center;
+    text-transform: uppercase;
     background: rgb(249, 249, 249);
     border: none;
-    letter-spacing: 1.8px;
-    cursor: pointer;
+    color: rgb(0, 0, 0);
+
+    img {
+        width: 32px;
+    }
 
     &:hover {
         background: rgb(198, 198, 198);
+    }
+
+    @media (max-width: 768px) {
+        height: 45px;
+        padding: 0px 12px;
+        font-size: 12px;
+        margin: 0px 10px 0px 0px;
+
+        img {
+            width: 25px;
+        }
     }
 `
 const TrailerButton = styled(PlayButton)`
@@ -134,25 +169,63 @@ const AddButton = styled.button`
     border: 2px solid white;
     background-color: rgba(0, 0, 0, 0.6);
     cursor: pointer;
-
+ 
     span {
-        font-size: 30px;
-        color: white;
+        background-color: rgb(249, 249, 249);
+        display: inline-block;
+        
+        &:first-child {
+            height: 2px;
+            transform: translate(1px, 0px) rotate(0deg);
+            width: 16px;
+        }
+        &:nth-child(2) {
+            height: 16px;
+            transform: translateX(-8px) rotate(0deg);
+            width: 2px;
+        }
     }
 `
-const GroupWatchButton = styled(AddButton)`
-    background: rgb(0, 0, 0);
+const GroupWatchButton = styled.div`
+    height: 44px;
+    width: 44px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background: white;
+
+    div {
+        height: 40px;
+        width: 40px;
+        background: rgb(0, 0, 0);
+        border-radius: 50%;
+
+        img {
+            width: 100%;
+        }
+    }
 `
 const SubTitle = styled.div`
     color: rgb(249, 249, 249);
     font-size: 15px;
     min-height: 20px;
     margin-top: 26px;
+
+    @media (max-width: 768px) {
+        font-size: 12px;
+    }
 `
 const Description = styled.div`
     line-height: 1.4;
     font-size: 20px;
-    margin-top: 16px;
+    padding: 16px 0px;
     color: rgb(249, 249, 249);
+    margin-top: 16px;
     max-width: 760px;
+
+    @media (max-width: 768px) {
+        font-size: 14px;
+    }
 `
