@@ -6,6 +6,9 @@ import db from '../firebase';
 import { useDispatch } from 'react-redux';
 import { setMovies } from '../features/movie/movieSlice';
 import Recommends from './Reacommends';
+import NewDisney from './NewDisney';
+import Originals from './Originals';
+import Trending from './Trending';
 
 function Home() {
   const dispatch = useDispatch();
@@ -22,6 +25,9 @@ function Home() {
       <ImgSlider />
       <Viewers />
       <Recommends />
+      <NewDisney />
+      <Originals />
+      <Trending />
     </Container>
   )
 }
